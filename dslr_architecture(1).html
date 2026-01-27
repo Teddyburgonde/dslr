@@ -1,0 +1,3070 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSLR - Architecture du Projet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+        
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .module {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+        }
+        
+        .module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .module-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .module-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .module-desc {
+            color: #718096;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            background: #f7fafc;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            transition: background 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .file-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+        
+        .file-item .file-name {
+            color: #2d3748;
+            font-weight: 700;
+        }
+        
+        .file-item .file-desc {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .function-list {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+        
+        .function-item {
+            color: #4a5568;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #fff;
+            border-radius: 6px;
+            border-left: 3px solid #48bb78;
+        }
+        
+        .flow-diagram {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+        
+        .flow-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            color: #2d3748;
+        }
+        
+        .flow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .flow-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .flow-step:hover {
+            transform: scale(1.05);
+        }
+        
+        .flow-step-number {
+            background: rgba(255,255,255,0.2);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            color: #667eea;
+            opacity: 0.5;
+        }
+        
+        .legend {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .legend-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .legend-text {
+            font-weight: 500;
+        }
+        
+        .legend-desc {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .architecture {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-steps {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+        
+        /* SUMMARY SECTION */
+        .summary-section {
+            margin-bottom: 40px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .main-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+        }
+        
+        .summary-icon {
+            font-size: 3rem;
+            min-width: 60px;
+        }
+        
+        .summary-content {
+            flex: 1;
+        }
+        
+        .summary-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .summary-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+        
+        .summary-highlight {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid white;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .summary-subtitle {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .summary-list {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+        
+        .summary-list li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .summary-tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tool-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        /* CONCEPTS SECTION */
+        .concepts-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+        
+        .concepts-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Space Mono', monospace;
+            color: #2d3748;
+        }
+        
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .concept-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .concept-stats { border-color: #fcd34d; }
+        .concept-ml { border-color: #60a5fa; }
+        .concept-math { border-color: #f472b6; }
+        .concept-data { border-color: #34d399; }
+        .concept-code { border-color: #818cf8; }
+        .concept-best { border-color: #fb923c; }
+        
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .concept-emoji {
+            font-size: 2.5rem;
+        }
+        
+        .concept-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .concept-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .concept-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .concept-bullet {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.2rem;
+            min-width: 15px;
+        }
+        
+        .concept-item strong {
+            color: #2d3748;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .concept-formula {
+            font-family: 'Space Mono', monospace;
+            color: #667eea;
+            font-size: 0.85rem;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+        
+        .concept-desc {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+        
+        .skills-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .skills-summary h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .skill-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* PREP EXERCISES SECTION */
+        .prep-section {
+            margin-bottom: 40px;
+        }
+        
+        .prep-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(240, 147, 251, 0.3);
+        }
+        
+        .prep-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .prep-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+        
+        .prep-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .prep-stat {
+            text-align: center;
+        }
+        
+        .prep-stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 5px;
+        }
+        
+        .prep-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .prep-modules {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .prep-module {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 6px solid #f093fb;
+        }
+        
+        .prep-module-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f7fafc;
+        }
+        
+        .prep-module-icon {
+            font-size: 3rem;
+            min-width: 60px;
+        }
+        
+        .prep-module-info {
+            flex: 1;
+        }
+        
+        .prep-module-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .prep-module-desc {
+            color: #718096;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .prep-module-duration {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .prep-exercises {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .prep-exercise {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .prep-exercise:hover {
+            background: #edf2f7;
+            border-color: #f093fb;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.2);
+        }
+        
+        .prep-exercise.completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .prep-exercise.completed .prep-checkbox {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .prep-checkbox {
+            width: 35px;
+            height: 35px;
+            min-width: 35px;
+            border-radius: 10px;
+            background: white;
+            border: 3px solid #cbd5e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        
+        .prep-ex-content {
+            flex: 1;
+        }
+        
+        .prep-ex-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+        
+        .prep-ex-text {
+            display: inline;
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 1.05rem;
+        }
+        
+        .prep-ex-detail {
+            margin-top: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #f093fb;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+        
+        .prep-ex-detail strong {
+            color: #2d3748;
+            font-weight: 700;
+        }
+        
+        .code-signature {
+            background: #1a202c;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            white-space: pre;
+        }
+        
+        @media (max-width: 768px) {
+            .prep-title {
+                font-size: 1.8rem;
+            }
+            
+            .prep-stats {
+                gap: 20px;
+            }
+            
+            .prep-stat-number {
+                font-size: 2rem;
+            }
+            
+            .prep-module-header {
+                flex-direction: column;
+            }
+            
+            .prep-exercise {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .architecture {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-steps {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .main-summary {
+                flex-direction: column;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .concepts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .badge-module1 { background: #fef3c7; color: #92400e; }
+        .badge-module2 { background: #dbeafe; color: #1e40af; }
+        .badge-module3 { background: #fce7f3; color: #9f1239; }
+        .badge-module4 { background: #d1fae5; color: #065f46; }
+        .badge-module5 { background: #e0e7ff; color: #3730a3; }
+        
+        .expandable {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .expandable-content.active {
+            max-height: 2000px;
+        }
+        
+        .expand-icon {
+            float: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .expand-icon.active {
+            transform: rotate(180deg);
+        }
+        
+        /* ROADMAP STYLES */
+        .roadmap {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .roadmap-day {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 8px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .roadmap-day:hover {
+            transform: translateX(5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .day-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .day-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            flex: 1;
+        }
+        
+        .day-duration {
+            background: #f7fafc;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #718096;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .roadmap-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .roadmap-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .roadmap-step:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .roadmap-step.completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .roadmap-step.completed .step-checkbox {
+            background: #10b981;
+            color: white;
+        }
+        
+        .step-checkbox {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #cbd5e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        .step-text {
+            display: inline;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+        
+        .step-detail {
+            margin-top: 6px;
+            color: #718096;
+            font-size: 0.9rem;
+            font-family: 'Space Mono', monospace;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .day-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .roadmap-step {
+                padding: 12px;
+            }
+            
+            .step-checkbox {
+                width: 25px;
+                height: 25px;
+                min-width: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧙‍♂️ DSLR Project Architecture</h1>
+        <p class="subtitle">Harry Potter and the Data Scientist - Structure complète du projet</p>
+        
+        <!-- RÉSUMÉ DU SUJET -->
+        <div class="summary-section">
+            <div class="summary-card main-summary">
+                <div class="summary-icon">📖</div>
+                <div class="summary-content">
+                    <h2 class="summary-title">Le Sujet en Bref</h2>
+                    <p class="summary-text">
+                        Le Choixpeau Magique de Poudlard est cassé ! 🎩 Tu dois créer un algorithme de Machine Learning 
+                        capable de trier les nouveaux élèves dans leur maison (Gryffondor, Serpentard, Serdaigle, Poufsouffle) 
+                        en se basant sur leurs résultats scolaires dans différentes matières magiques.
+                    </p>
+                    <div class="summary-highlight">
+                        <strong>Mission :</strong> Implémenter une régression logistique <strong>FROM SCRATCH</strong> (sans sklearn) 
+                        pour classifier les élèves dans 4 maisons avec une précision minimale de 98%.
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon">📊</div>
+                    <div class="summary-content">
+                        <h3 class="summary-subtitle">Partie 1 : Data Analysis</h3>
+                        <ul class="summary-list">
+                            <li>📈 Calculer des statistiques descriptives (sans pandas.describe())</li>
+                            <li>🧹 Gérer les valeurs manquantes (NaN)</li>
+                            <li>🔍 Comprendre la distribution des données</li>
+                        </ul>
+                        <div class="summary-tools">
+                            <span class="tool-badge">numpy</span>
+                            <span class="tool-badge">pandas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">📉</div>
+                    <div class="summary-content">
+                        <h3 class="summary-subtitle">Partie 2 : Data Visualization</h3>
+                        <ul class="summary-list">
+                            <li>📊 Histogrammes pour trouver les features homogènes</li>
+                            <li>🔵 Scatter plots pour détecter les corrélations</li>
+                            <li>🎨 Pair plots pour visualiser toutes les relations</li>
+                        </ul>
+                        <div class="summary-tools">
+                            <span class="tool-badge">matplotlib</span>
+                            <span class="tool-badge">seaborn</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon">🧠</div>
+                    <div class="summary-content">
+                        <h3 class="summary-subtitle">Partie 3 : Logistic Regression</h3>
+                        <ul class="summary-list">
+                            <li>🔢 Implémenter la fonction sigmoïde</li>
+                            <li>📉 Coder la fonction de coût (cross-entropy)</li>
+                            <li>⚡ Gradient descent pour l'optimisation</li>
+                            <li>🎯 One-vs-All pour multi-classes</li>
+                        </ul>
+                        <div class="summary-tools">
+                            <span class="tool-badge">math</span>
+                            <span class="tool-badge">numpy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIONS À APPRENDRE -->
+        <div class="concepts-section">
+            <h2 class="concepts-title">🎓 Notions que tu vas Maîtriser</h2>
+            
+            <div class="concepts-grid">
+                <div class="concept-card concept-stats">
+                    <div class="concept-header">
+                        <span class="concept-emoji">📊</span>
+                        <h3 class="concept-name">Statistiques</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Moyenne (mean)</strong>
+                                <div class="concept-formula">μ = Σx / n</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Écart-type (std)</strong>
+                                <div class="concept-formula">σ = √(Σ(x-μ)² / n)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Percentiles</strong>
+                                <div class="concept-desc">Quartiles (25%, 50%, 75%)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Distribution</strong>
+                                <div class="concept-desc">Comprendre la forme des données</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card concept-ml">
+                    <div class="concept-header">
+                        <span class="concept-emoji">🤖</span>
+                        <h3 class="concept-name">Machine Learning</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Classification binaire</strong>
+                                <div class="concept-desc">Séparer 2 classes (0 ou 1)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Multi-classification</strong>
+                                <div class="concept-desc">One-vs-All (4 classifiers)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Gradient Descent</strong>
+                                <div class="concept-formula">θ := θ - α·∇J(θ)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Fonction de coût</strong>
+                                <div class="concept-desc">Cross-entropy loss</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card concept-math">
+                    <div class="concept-header">
+                        <span class="concept-emoji">🔢</span>
+                        <h3 class="concept-name">Mathématiques</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Fonction sigmoïde</strong>
+                                <div class="concept-formula">σ(z) = 1 / (1 + e^(-z))</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Algèbre linéaire</strong>
+                                <div class="concept-desc">Produit matriciel (X·θ)</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Dérivées partielles</strong>
+                                <div class="concept-formula">∂J/∂θ = gradient</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Probabilités</strong>
+                                <div class="concept-desc">Interpréter les sorties [0,1]</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card concept-data">
+                    <div class="concept-header">
+                        <span class="concept-emoji">🔧</span>
+                        <h3 class="concept-name">Data Processing</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Normalisation</strong>
+                                <div class="concept-formula">(X - μ) / σ</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Feature Selection</strong>
+                                <div class="concept-desc">Choisir les bonnes variables</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Gestion des NaN</strong>
+                                <div class="concept-desc">Valeurs manquantes</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Corrélation</strong>
+                                <div class="concept-desc">Relations entre features</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card concept-code">
+                    <div class="concept-header">
+                        <span class="concept-emoji">💻</span>
+                        <h3 class="concept-name">Coding Skills</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Python avancé</strong>
+                                <div class="concept-desc">Classes, numpy arrays</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Programmation orientée objet</strong>
+                                <div class="concept-desc">Classe LogisticRegression</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Manipulation de données</strong>
+                                <div class="concept-desc">pandas, numpy</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Visualisation</strong>
+                                <div class="concept-desc">matplotlib, plots</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card concept-best">
+                    <div class="concept-header">
+                        <span class="concept-emoji">⭐</span>
+                        <h3 class="concept-name">Best Practices</h3>
+                    </div>
+                    <div class="concept-items">
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Code modulaire</strong>
+                                <div class="concept-desc">Fonctions réutilisables</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Tests unitaires</strong>
+                                <div class="concept-desc">Valider ton code</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Documentation</strong>
+                                <div class="concept-desc">Docstrings, commentaires</div>
+                            </div>
+                        </div>
+                        <div class="concept-item">
+                            <span class="concept-bullet">▸</span>
+                            <div>
+                                <strong>Debugging</strong>
+                                <div class="concept-desc">Trouver et fixer les bugs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills-summary">
+                <h3>🎯 À la fin du projet, tu seras capable de :</h3>
+                <div class="skills-list">
+                    <span class="skill-tag">✓ Analyser un dataset from scratch</span>
+                    <span class="skill-tag">✓ Visualiser des données complexes</span>
+                    <span class="skill-tag">✓ Implémenter un algorithme ML</span>
+                    <span class="skill-tag">✓ Comprendre le gradient descent</span>
+                    <span class="skill-tag">✓ Faire de la classification multi-classes</span>
+                    <span class="skill-tag">✓ Expliquer la régression logistique</span>
+                    <span class="skill-tag">✓ Coder proprement en Python</span>
+                    <span class="skill-tag">✓ Gérer un projet ML de A à Z</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXERCICES PRÉPARATOIRES -->
+        <div class="prep-section">
+            <div class="prep-header">
+                <h2 class="prep-title">📚 Exercices Préparatoires (AVANT le projet)</h2>
+                <p class="prep-subtitle">
+                    Fais ces exercices AVANT de commencer le projet. Ils te permettront de construire 
+                    des fonctions réutilisables que tu copieras-colleras dans le vrai projet.
+                </p>
+                <div class="prep-stats">
+                    <div class="prep-stat">
+                        <div class="prep-stat-number" id="prep-completed">0</div>
+                        <div class="prep-stat-label">Complétés</div>
+                    </div>
+                    <div class="prep-stat">
+                        <div class="prep-stat-number">40</div>
+                        <div class="prep-stat-label">Total</div>
+                    </div>
+                    <div class="prep-stat">
+                        <div class="prep-stat-number" id="prep-progress">0%</div>
+                        <div class="prep-stat-label">Progression</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prep-modules">
+                <!-- MODULE 1 -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">📊</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Module 1 : Statistiques & Analyse</h3>
+                            <p class="prep-module-desc">Construis utils/stats.py avec toutes les fonctions</p>
+                            <div class="prep-module-duration">⏱️ 2-3 heures</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.1</div>
+                                <div class="prep-ex-text">Fonction count(arr) - Compte les valeurs non-NaN</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def count(arr):
+    """Compte le nombre de valeurs non-NaN"""
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Objectif :</strong> Implémenter count() qui ignore les NaN<br>
+                                    <strong>Test :</strong> count([1, 2, nan, 4]) == 3<br>
+                                    <strong>Fichier :</strong> utils/stats.py
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.2</div>
+                                <div class="prep-ex-text">Fonction mean(arr) - Calcule la moyenne</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def mean(arr):
+    """Calcule la moyenne en ignorant les NaN"""
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Formule :</strong> μ = Σx / n<br>
+                                    <strong>Test :</strong> mean([1, 2, 3, 4]) == 2.5<br>
+                                    <strong>Indice :</strong> Utilise ta fonction count()
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.3</div>
+                                <div class="prep-ex-text">Fonction std(arr) - Calcule l'écart-type</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def std(arr):
+    """Calcule l'écart-type (population)"""
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Formule :</strong> σ = √(Σ(x-μ)² / n)<br>
+                                    <strong>Test :</strong> std([2, 4, 4, 4, 5, 5, 7, 9]) ≈ 2.0<br>
+                                    <strong>Indice :</strong> Calcule d'abord mean(), puis variance, puis racine
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.4</div>
+                                <div class="prep-ex-text">Fonctions min_val(arr) et max_val(arr)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signatures :</strong>
+                                    <pre class="code-signature">def min_val(arr):
+    """Retourne le minimum en ignorant NaN"""
+    # TON CODE ICI
+    pass
+
+def max_val(arr):
+    """Retourne le maximum en ignorant NaN"""
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Objectif :</strong> Trouver min/max en ignorant NaN<br>
+                                    <strong>Indice :</strong> Filtre les NaN puis utilise np.min/max
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.5</div>
+                                <div class="prep-ex-text">Fonction percentile(arr, q) - Quartiles</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def percentile(arr, q):
+    """
+    Calcule le percentile q (0-100)
+    Args:
+        arr: numpy array
+        q: percentile (ex: 25, 50, 75)
+    """
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Objectif :</strong> Calculer le percentile q (0-100)<br>
+                                    <strong>Test :</strong> percentile([1,2,3,4,5], 50) == 3.0<br>
+                                    <strong>Indice :</strong> Trie l'array, calcule l'index, interpole
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 1.6</div>
+                                <div class="prep-ex-text">Script describe.py - Assemblage final</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Objectif :</strong> Créer describe.py qui utilise toutes les fonctions<br>
+                                    <strong>Test :</strong> python describe.py dataset.csv<br>
+                                    <strong>Résultat :</strong> Tableau avec Count, Mean, Std, Min, 25%, 50%, 75%, Max
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 2 -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">📈</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Module 2 : Visualisation</h3>
+                            <p class="prep-module-desc">Construis utils/visualization.py</p>
+                            <div class="prep-module-duration">⏱️ 2-3 heures</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.1</div>
+                                <div class="prep-ex-text">plot_simple_histogram(data, feature_name)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def plot_simple_histogram(data, feature_name, title=None):
+    """Plot un histogramme basique"""
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Objectif :</strong> Histogramme basique avec matplotlib<br>
+                                    <strong>Outils :</strong> plt.hist(), plt.xlabel(), plt.ylabel()<br>
+                                    <strong>Test :</strong> Visualiser une feature
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.2</div>
+                                <div class="prep-ex-text">plot_histogram_by_house(df, feature)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def plot_histogram_by_house(df, feature_name):
+    """
+    Plot 4 histogrammes superposés (un par maison)
+    Args:
+        df: DataFrame avec colonne 'Hogwarts House'
+        feature_name: nom de la feature
+    """
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Objectif :</strong> 4 courbes superposées (une par maison)<br>
+                                    <strong>Astuce :</strong> Utilise alpha=0.6 pour transparence<br>
+                                    <strong>Couleurs :</strong> ['red', 'blue', 'green', 'yellow']
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.3</div>
+                                <div class="prep-ex-text">Script histogram.py</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Code :</strong>
+                                    <pre class="code-signature">import pandas as pd
+from utils.visualization import plot_histogram_by_house
+
+df = pd.read_csv('data/dataset_train.csv')
+# Teste différentes features
+plot_histogram_by_house(df, 'Care of Magical Creatures')</pre>
+                                    <strong>Question :</strong> Quelle feature est la plus homogène ?<br>
+                                    <strong>Méthode :</strong> Teste toutes les features une par une
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.4</div>
+                                <div class="prep-ex-text">plot_scatter(df, feature_x, feature_y)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def plot_scatter(df, feature_x, feature_y):
+    """
+    Scatter plot coloré par maison
+    Args:
+        df: DataFrame avec 'Hogwarts House'
+        feature_x, feature_y: noms des features
+    """
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Outil :</strong> plt.scatter(x, y, c=color, alpha=0.6)<br>
+                                    <strong>But :</strong> Détecter les corrélations
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.5</div>
+                                <div class="prep-ex-text">Script scatter_plot.py</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Code :</strong>
+                                    <pre class="code-signature">import pandas as pd
+from utils.visualization import plot_scatter
+
+df = pd.read_csv('data/dataset_train.csv')
+plot_scatter(df, 'Astronomy', 'Defense Against the Dark Arts')</pre>
+                                    <strong>Question :</strong> Quelles features sont similaires (corrélées) ?<br>
+                                    <strong>Indice :</strong> Cherche les nuages de points qui forment une droite
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.6</div>
+                                <div class="prep-ex-text">plot_pair_plot(df, features)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def plot_pair_plot(df, features):
+    """
+    Grille NxN de scatter plots
+    Args:
+        df: DataFrame
+        features: liste des features à comparer
+    """
+    # TON CODE ICI
+    # fig, axes = plt.subplots(n, n, figsize=(15, 15))
+    pass</pre>
+                                    <strong>Diagonale :</strong> Histogrammes<br>
+                                    <strong>Hors diagonale :</strong> Scatter plots<br>
+                                    <strong>Outil :</strong> plt.subplots(n, n)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 2.7</div>
+                                <div class="prep-ex-text">Script pair_plot.py</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Code :</strong>
+                                    <pre class="code-signature">import pandas as pd
+from utils.visualization import plot_pair_plot
+
+df = pd.read_csv('data/dataset_train.csv')
+features = ['Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts']
+plot_pair_plot(df, features)</pre>
+                                    <strong>Question :</strong> Quelles features utiliser pour la régression ?<br>
+                                    <strong>Critère :</strong> Choisir celles qui séparent bien les maisons
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 3 -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">🧠</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Module 3 : Régression Logistique (Base)</h3>
+                            <p class="prep-module-desc">Construis models/logistic.py</p>
+                            <div class="prep-module-duration">⏱️ 3-5 heures</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.1</div>
+                                <div class="prep-ex-text">Fonction sigmoid(z)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def sigmoid(z):
+    """Fonction sigmoïde : σ(z) = 1 / (1 + e^(-z))"""
+    z = np.clip(z, -500, 500)  # Évite overflow
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Formule :</strong> σ(z) = 1 / (1 + e^(-z))<br>
+                                    <strong>Test :</strong> sigmoid(0) == 0.5<br>
+                                    <strong>⚠️ Overflow :</strong> Utilise np.clip(z, -500, 500)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.2</div>
+                                <div class="prep-ex-text">Fonction cost_function(X, y, theta)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def cost_function(X, y, theta):
+    """
+    Fonction de coût (cross-entropy loss)
+    J(θ) = -1/m Σ[y·log(h) + (1-y)·log(1-h)]
+    """
+    m = len(y)
+    epsilon = 1e-15  # Évite log(0)
+    # TON CODE ICI
+    pass</pre>
+                                    <strong>Formule :</strong> J(θ) = -1/m Σ[y·log(h) + (1-y)·log(1-h)]<br>
+                                    <strong>où :</strong> h = sigmoid(X @ theta)<br>
+                                    <strong>⚠️ log(0) :</strong> Utilise epsilon=1e-15
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.3</div>
+                                <div class="prep-ex-text">Fonction gradient_step(X, y, theta, lr)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def gradient_step(X, y, theta, learning_rate):
+    """
+    Une itération de gradient descent
+    θ := θ - α·gradient
+    """
+    m = len(y)
+    # TON CODE ICI
+    # gradient = 1/m · X.T @ (h - y)
+    pass</pre>
+                                    <strong>Formule :</strong> θ := θ - α·gradient<br>
+                                    <strong>Gradient :</strong> 1/m · X.T @ (h - y)<br>
+                                    <strong>Test :</strong> Vérifie que theta change
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.4</div>
+                                <div class="prep-ex-text">Fonction train(X, y, lr, iterations)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def train(X, y, learning_rate=0.01, iterations=1000):
+    """Entraîne un modèle de régression logistique"""
+    m, n = X.shape
+    theta = np.zeros(n)
+    
+    for i in range(iterations):
+        # TON CODE ICI
+        # Appelle gradient_step()
+        pass
+    
+    return theta</pre>
+                                    <strong>Objectif :</strong> Boucle d'entraînement complète<br>
+                                    <strong>Étapes :</strong> Init theta → Boucle gradient_step → Return theta<br>
+                                    <strong>Test :</strong> Vérifie que la loss diminue
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.5</div>
+                                <div class="prep-ex-text">Fonction predict(X, theta)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def predict(X, theta):
+    """Prédit les classes (0 ou 1)"""
+    return (sigmoid(X @ theta) >= 0.5).astype(int)</pre>
+                                    <strong>Règle :</strong> Si σ(X·θ) >= 0.5 → classe 1, sinon classe 0<br>
+                                    <strong>Test :</strong> Prédit sur des données simples
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.6</div>
+                                <div class="prep-ex-text">Classe LogisticRegression</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">class LogisticRegression:
+    def __init__(self, learning_rate=0.01, iterations=1000):
+        self.lr = learning_rate
+        self.iterations = iterations
+        self.theta = None
+    
+    def fit(self, X, y):
+        """Entraîne le modèle"""
+        # TON CODE ICI
+        pass
+    
+    def predict_proba(self, X):
+        """Retourne les probabilités"""
+        return sigmoid(X @ self.theta)
+    
+    def predict(self, X):
+        """Retourne les classes (0/1)"""
+        return (self.predict_proba(X) >= 0.5).astype(int)</pre>
+                                    <strong>Objectif :</strong> Encapsuler toutes les fonctions précédentes<br>
+                                    <strong>Test :</strong> model = LogisticRegression(); model.fit(X, y)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 3.7</div>
+                                <div class="prep-ex-text">Test sur un cas simple (2D, 2 classes)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Code de test :</strong>
+                                    <pre class="code-signature"># Crée des données simples
+X = np.random.randn(100, 2)
+y = (X[:, 0] + X[:, 1] > 0).astype(int)
+
+# Entraîne
+model = LogisticRegression(learning_rate=0.1, iterations=1000)
+model.fit(X, y)
+
+# Teste
+predictions = model.predict(X)
+accuracy = np.mean(predictions == y)
+print(f"Accuracy: {accuracy:.2%}")</pre>
+                                    <strong>Objectif :</strong> Valider que tout fonctionne<br>
+                                    <strong>Test :</strong> Accuracy > 90%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 4 -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">🎯</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Module 4 : One-vs-All Multi-classes</h3>
+                            <p class="prep-module-desc">Extension pour 4 classes</p>
+                            <div class="prep-module-duration">⏱️ 2-3 heures</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 4.1</div>
+                                <div class="prep-ex-text">Comprendre le concept One-vs-All</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Principe :</strong> Entraîner 4 modèles binaires<br>
+                                    <strong>Exemple :</strong> Modèle 1 = Gryffindor (1) vs Autres (0)<br>
+                                    <strong>Prédiction :</strong> Prendre la classe avec la proba max
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 4.2</div>
+                                <div class="prep-ex-text">Fonction train_one_vs_all(X, y, houses)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def train_one_vs_all(X, y, houses):
+    """
+    Entraîne 4 modèles (un par maison)
+    Returns: dict {house_name: theta}
+    """
+    models = {}
+    
+    for house in houses:
+        # Crée y_binary : 1 si y==house, 0 sinon
+        y_binary = (y == house).astype(int)
+        
+        # Entraîne un modèle
+        model = LogisticRegression()
+        model.fit(X, y_binary)
+        
+        # Stocke theta
+        models[house] = model.theta
+    
+    return models</pre>
+                                    <strong>Objectif :</strong> Entraîner 4 modèles<br>
+                                    <strong>Boucle :</strong> Pour chaque maison, créer y_binary et fit()<br>
+                                    <strong>Return :</strong> dict {house_name: theta}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 4.3</div>
+                                <div class="prep-ex-text">Fonction predict_multiclass(X, models, houses)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def predict_multiclass(X, models, houses):
+    """
+    Prédit la classe pour chaque sample
+    Returns: array de noms de maisons
+    """
+    probas = []
+    for house in houses:
+        theta = models[house]
+        proba = sigmoid(X @ theta)
+        probas.append(proba)
+    
+    # Transpose et prend argmax
+    probas = np.array(probas).T
+    predictions = np.argmax(probas, axis=1)
+    
+    # Convertit indices en noms
+    return np.array([houses[i] for i in predictions])</pre>
+                                    <strong>Méthode :</strong> Calculer 4 probas, prendre argmax<br>
+                                    <strong>Return :</strong> Array de noms de maisons
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 4.4</div>
+                                <div class="prep-ex-text">Test sur un dataset simple 4 classes</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Code de test :</strong>
+                                    <pre class="code-signature"># Crée 4 clusters
+from sklearn.datasets import make_blobs
+X, y_int = make_blobs(n_samples=400, centers=4, random_state=42)
+
+# Convertit en noms
+houses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff']
+y = np.array([houses[i] for i in y_int])
+
+# Entraîne
+models = train_one_vs_all(X, y, houses)
+
+# Prédit
+predictions = predict_multiclass(X, models, houses)
+accuracy = np.mean(predictions == y)
+print(f"Accuracy: {accuracy:.2%}")</pre>
+                                    <strong>Objectif :</strong> Valider le one-vs-all<br>
+                                    <strong>Test :</strong> Vérifie que ça prédit correctement
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 5 -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">🔧</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Module 5 : Preprocessing & Optimisation</h3>
+                            <p class="prep-module-desc">Construis utils/preprocessing.py</p>
+                            <div class="prep-module-duration">⏱️ 1-2 heures</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 5.1</div>
+                                <div class="prep-ex-text">Fonction standardize(X, mean, std)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def standardize(X, mean=None, std=None):
+    """
+    Standardisation : (X - μ) / σ
+    Returns: X_scaled, mean, std
+    """
+    if mean is None:
+        mean = np.mean(X, axis=0)
+    if std is None:
+        std = np.std(X, axis=0)
+    
+    X_scaled = (X - mean) / std
+    return X_scaled, mean, std</pre>
+                                    <strong>Formule :</strong> X_scaled = (X - μ) / σ<br>
+                                    <strong>Si mean=None :</strong> Calculer np.mean(X, axis=0)<br>
+                                    <strong>Return :</strong> X_scaled, mean, std
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 5.2</div>
+                                <div class="prep-ex-text">Fonction correlation_matrix(df, features)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Signature :</strong>
+                                    <pre class="code-signature">def correlation_matrix(df, features):
+    """
+    Calcule la matrice de corrélation
+    Returns: DataFrame NxN
+    """
+    data = df[features].values
+    corr = np.corrcoef(data, rowvar=False)
+    return pd.DataFrame(corr, index=features, columns=features)</pre>
+                                    <strong>Objectif :</strong> Calculer la matrice de corrélation<br>
+                                    <strong>Outil :</strong> np.corrcoef() (autorisé cette fois)<br>
+                                    <strong>But :</strong> Identifier les features redondantes (> 0.9)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 5.3</div>
+                                <div class="prep-ex-text">Expérimenter avec hyperparamètres</div>
+                                <div class="prep-ex-detail">
+                                    <strong>learning_rate :</strong> Teste [0.001, 0.01, 0.1, 1.0]<br>
+                                    <strong>iterations :</strong> Teste [500, 1000, 5000]<br>
+                                    <strong>Objectif :</strong> Trouver les meilleurs paramètres
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Ex 5.4</div>
+                                <div class="prep-ex-text">Feature selection intelligente</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Méthode 1 :</strong> Supprime les features corrélées<br>
+                                    <strong>Méthode 2 :</strong> Garde celles qui séparent bien les classes<br>
+                                    <strong>Test :</strong> Compare accuracy avec différentes combis
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TESTS FINAUX -->
+                <div class="prep-module">
+                    <div class="prep-module-header">
+                        <div class="prep-module-icon">✅</div>
+                        <div class="prep-module-info">
+                            <h3 class="prep-module-title">Tests & Validation Finale</h3>
+                            <p class="prep-module-desc">Vérifie que tout fonctionne</p>
+                            <div class="prep-module-duration">⏱️ 1 heure</div>
+                        </div>
+                    </div>
+                    <div class="prep-exercises">
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 1</div>
+                                <div class="prep-ex-text">Toutes les fonctions stats passent leurs tests</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Fichier :</strong> test_stats.py<br>
+                                    <strong>Commande :</strong> python test_stats.py
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 2</div>
+                                <div class="prep-ex-text">describe.py affiche le bon format</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Compare avec :</strong> pandas.describe()<br>
+                                    <strong>Tolérance :</strong> Différences < 0.01
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 3</div>
+                                <div class="prep-ex-text">Tous les plots s'affichent correctement</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Tests :</strong> histogram.py, scatter_plot.py, pair_plot.py<br>
+                                    <strong>Vérifie :</strong> Pas d'erreurs, graphs lisibles
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 4</div>
+                                <div class="prep-ex-text">LogisticRegression fonctionne (binary)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Dataset simple :</strong> 2 clusters<br>
+                                    <strong>Accuracy :</strong> > 90%<br>
+                                    <strong>Loss :</strong> Doit diminuer
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 5</div>
+                                <div class="prep-ex-text">One-vs-All fonctionne (4 classes)</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Dataset simple :</strong> 4 clusters<br>
+                                    <strong>Accuracy :</strong> > 85%<br>
+                                    <strong>Vérifie :</strong> Toutes les classes prédites
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">Test 6</div>
+                                <div class="prep-ex-text">Normalisation fonctionne correctement</div>
+                                <div class="prep-ex-detail">
+                                    <strong>Test :</strong> X_scaled a mean≈0 et std≈1<br>
+                                    <strong>Vérifie :</strong> mean/std sont bien sauvegardés
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prep-exercise" onclick="togglePrepCheck(this)">
+                            <div class="prep-checkbox">☐</div>
+                            <div class="prep-ex-content">
+                                <div class="prep-ex-number">✅ PRÊT</div>
+                                <div class="prep-ex-text">Tu as terminé tous les exercices préparatoires !</div>
+                                <div class="prep-ex-detail">
+                                    <strong>🎉 Félicitations !</strong> Tu as maintenant tous les outils<br>
+                                    <strong>👉 Prochaine étape :</strong> Commence la ROADMAP du vrai projet<br>
+                                    <strong>💪 Tu vas tout déchirer !</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Flow diagram -->
+        <div class="flow-diagram">
+            <h2 class="flow-title">🔄 Workflow du Projet</h2>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-number">1</div>
+                    <div>📊 Analyse des données<br><small>(describe.py)</small></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">2</div>
+                    <div>📈 Visualisation<br><small>(histograms, plots)</small></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">3</div>
+                    <div>🎯 Feature Selection<br><small>(corrélations)</small></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">4</div>
+                    <div>🧠 Entraînement<br><small>(logreg_train.py)</small></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">5</div>
+                    <div>🔮 Prédiction<br><small>(logreg_predict.py)</small></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Architecture modules -->
+        <div class="architecture">
+            <!-- Utils Module -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">📦</div>
+                    <div class="module-title">utils/</div>
+                </div>
+                <div class="module-desc">
+                    <span class="badge badge-module1">Module 1</span>
+                    <span class="badge badge-module2">Module 2</span>
+                    <span class="badge badge-module5">Module 5</span>
+                    <br><br>
+                    Bibliothèque de fonctions réutilisables pour stats, preprocessing et visualisation
+                </div>
+                <ul class="file-list">
+                    <li class="file-item expandable" onclick="toggleExpand(this)">
+                        <div>
+                            <span class="file-name">stats.py</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="file-desc">Statistiques from scratch (sans pandas)</div>
+                        <div class="expandable-content">
+                            <ul class="function-list">
+                                <li class="function-item">count(arr) → Compte les non-NaN</li>
+                                <li class="function-item">mean(arr) → Moyenne</li>
+                                <li class="function-item">std(arr) → Écart-type</li>
+                                <li class="function-item">min_val(arr) / max_val(arr)</li>
+                                <li class="function-item">percentile(arr, q) → Quartiles</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="file-item expandable" onclick="toggleExpand(this)">
+                        <div>
+                            <span class="file-name">visualization.py</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="file-desc">Fonctions de plotting avec matplotlib</div>
+                        <div class="expandable-content">
+                            <ul class="function-list">
+                                <li class="function-item">plot_histogram_by_house(df, feature)</li>
+                                <li class="function-item">plot_scatter(df, feat_x, feat_y)</li>
+                                <li class="function-item">plot_pair_plot(df, features)</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="file-item expandable" onclick="toggleExpand(this)">
+                        <div>
+                            <span class="file-name">preprocessing.py</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="file-desc">Normalisation et nettoyage des données</div>
+                        <div class="expandable-content">
+                            <ul class="function-list">
+                                <li class="function-item">standardize(X, mean, std) → (X-μ)/σ</li>
+                                <li class="function-item">handle_nan(df) → Gestion NaN</li>
+                                <li class="function-item">select_features(df) → Feature selection</li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Models Module -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">🧠</div>
+                    <div class="module-title">models/</div>
+                </div>
+                <div class="module-desc">
+                    <span class="badge badge-module3">Module 3</span>
+                    <span class="badge badge-module4">Module 4</span>
+                    <br><br>
+                    Implémentation de la régression logistique from scratch
+                </div>
+                <ul class="file-list">
+                    <li class="file-item expandable" onclick="toggleExpand(this)">
+                        <div>
+                            <span class="file-name">logistic.py</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="file-desc">Classe LogisticRegression + One-vs-All</div>
+                        <div class="expandable-content">
+                            <ul class="function-list">
+                                <li class="function-item"><strong>Classe LogisticRegression:</strong></li>
+                                <li class="function-item">  __init__(lr, iterations)</li>
+                                <li class="function-item">  sigmoid(z) → σ(z) = 1/(1+e^-z)</li>
+                                <li class="function-item">  cost(X, y, theta) → Loss function</li>
+                                <li class="function-item">  fit(X, y) → Gradient descent</li>
+                                <li class="function-item">  predict_proba(X) → Probabilités</li>
+                                <li class="function-item">  predict(X) → Classes (0/1)</li>
+                                <li class="function-item"><strong>One-vs-All:</strong></li>
+                                <li class="function-item">  train_one_vs_all(X, y, houses)</li>
+                                <li class="function-item">  predict_multiclass(X, models)</li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Scripts principaux -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">📄</div>
+                    <div class="module-title">Scripts Principaux</div>
+                </div>
+                <div class="module-desc">
+                    Scripts exécutables du projet (racine du dossier)
+                </div>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <span class="file-name">describe.py</span>
+                        <div class="file-desc">Affiche les stats descriptives (comme df.describe())</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">histogram.py</span>
+                        <div class="file-desc">Trouve la feature la plus homogène</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">scatter_plot.py</span>
+                        <div class="file-desc">Trouve les features similaires (corrélées)</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">pair_plot.py</span>
+                        <div class="file-desc">Matrice de scatter plots</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">logreg_train.py</span>
+                        <div class="file-desc">Entraîne les 4 modèles → weights.pkl</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">logreg_predict.py</span>
+                        <div class="file-desc">Prédit les maisons → houses.csv</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Data -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">💾</div>
+                    <div class="module-title">data/</div>
+                </div>
+                <div class="module-desc">
+                    Datasets et fichiers générés par le projet
+                </div>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <span class="file-name">dataset_train.csv</span>
+                        <div class="file-desc">📥 Input : Données d'entraînement</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">dataset_test.csv</span>
+                        <div class="file-desc">📥 Input : Données de test</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">weights.pkl</span>
+                        <div class="file-desc">📤 Output : Poids des 4 modèles</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">houses.csv</span>
+                        <div class="file-desc">📤 Output : Prédictions finales</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Tests -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">✅</div>
+                    <div class="module-title">tests/</div>
+                </div>
+                <div class="module-desc">
+                    Tests unitaires pour valider ton code
+                </div>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <span class="file-name">test_stats.py</span>
+                        <div class="file-desc">Tests pour utils/stats.py</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">test_logistic.py</span>
+                        <div class="file-desc">Tests pour models/logistic.py</div>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">test_preprocessing.py</span>
+                        <div class="file-desc">Tests pour preprocessing</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Commandes -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-icon">⚡</div>
+                    <div class="module-title">Commandes</div>
+                </div>
+                <div class="module-desc">
+                    Comment exécuter le projet
+                </div>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <span class="file-name">python describe.py data/dataset_train.csv</span>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">python histogram.py</span>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">python scatter_plot.py</span>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">python pair_plot.py</span>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">python logreg_train.py</span>
+                    </li>
+                    <li class="file-item">
+                        <span class="file-name">python logreg_predict.py</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- ROADMAP -->
+        <div class="flow-diagram" style="margin-top: 40px;">
+            <h2 class="flow-title">🗺️ ROADMAP COMPLÈTE - Étape par Étape</h2>
+            
+            <div class="roadmap">
+                <!-- JOUR 1 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 1</div>
+                        <div class="day-title">Setup & Statistiques de base</div>
+                        <div class="day-duration">⏱️ 2-3h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.1</div>
+                                <div class="step-text">Crée la structure de dossiers</div>
+                                <div class="step-detail">mkdir utils models data tests</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.2</div>
+                                <div class="step-text">Crée utils/stats.py (vide)</div>
+                                <div class="step-detail">Ajoute juste les imports : import numpy as np</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.3</div>
+                                <div class="step-text">Code la fonction count()</div>
+                                <div class="step-detail">Filtre les NaN et compte les valeurs</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.4</div>
+                                <div class="step-text">Lance les tests pour count()</div>
+                                <div class="step-detail">Vérifie que ça marche avec NaN</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.5</div>
+                                <div class="step-text">Code la fonction mean()</div>
+                                <div class="step-detail">Somme / nombre (ignore NaN)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.6</div>
+                                <div class="step-text">Code la fonction std()</div>
+                                <div class="step-detail">Utilise mean() puis calcule variance</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.7</div>
+                                <div class="step-text">Code min_val() et max_val()</div>
+                                <div class="step-detail">Simple : filtre NaN puis np.min/max</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">1.8</div>
+                                <div class="step-text">Code percentile(arr, q)</div>
+                                <div class="step-detail">Trie l'array puis calcule l'index</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 2 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 2</div>
+                        <div class="day-title">describe.py + Visualisation basique</div>
+                        <div class="day-duration">⏱️ 2-3h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.1</div>
+                                <div class="step-text">Crée describe.py</div>
+                                <div class="step-detail">Import pandas et tes fonctions stats</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.2</div>
+                                <div class="step-text">Charge dataset_train.csv</div>
+                                <div class="step-detail">df = pd.read_csv('data/dataset_train.csv')</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.3</div>
+                                <div class="step-text">Sélectionne les colonnes numériques</div>
+                                <div class="step-detail">df.select_dtypes(include=[np.number])</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.4</div>
+                                <div class="step-text">Boucle sur les colonnes et calcule stats</div>
+                                <div class="step-detail">Pour chaque col : count, mean, std, min, max, percentiles</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.5</div>
+                                <div class="step-text">Formate l'affichage en tableau</div>
+                                <div class="step-detail">Utilise f-strings avec :>15.6f</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.6</div>
+                                <div class="step-text">✅ TEST : python describe.py data/dataset_train.csv</div>
+                                <div class="step-detail">Compare avec pandas.describe() (juste pour vérifier)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.7</div>
+                                <div class="step-text">Crée utils/visualization.py</div>
+                                <div class="step-detail">Import matplotlib.pyplot as plt</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">2.8</div>
+                                <div class="step-text">Code plot_histogram_by_house()</div>
+                                <div class="step-detail">Boucle sur les maisons, plt.hist() avec alpha=0.6</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 3 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 3</div>
+                        <div class="day-title">Visualisations complètes</div>
+                        <div class="day-duration">⏱️ 2-3h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.1</div>
+                                <div class="step-text">Crée histogram.py</div>
+                                <div class="step-detail">Utilise plot_histogram_by_house()</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.2</div>
+                                <div class="step-text">Teste TOUTES les features une par une</div>
+                                <div class="step-detail">Trouve quelle feature est la plus homogène</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.3</div>
+                                <div class="step-text">Code plot_scatter() dans visualization.py</div>
+                                <div class="step-detail">Scatter avec couleurs par maison</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.4</div>
+                                <div class="step-text">Crée scatter_plot.py</div>
+                                <div class="step-detail">Compare toutes les paires de features</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.5</div>
+                                <div class="step-text">Trouve les 2 features les plus similaires</div>
+                                <div class="step-detail">Cherche celles qui forment une droite (corrélées)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.6</div>
+                                <div class="step-text">Code plot_pair_plot() dans visualization.py</div>
+                                <div class="step-detail">Grille NxN avec subplots</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.7</div>
+                                <div class="step-text">Crée pair_plot.py</div>
+                                <div class="step-detail">Affiche 4-5 features importantes</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">3.8</div>
+                                <div class="step-text">Note les features à utiliser pour le modèle</div>
+                                <div class="step-detail">Choisis celles qui séparent bien les maisons</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 4 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 4</div>
+                        <div class="day-title">Régression logistique - Base</div>
+                        <div class="day-duration">⏱️ 3-4h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.1</div>
+                                <div class="step-text">Crée models/logistic.py</div>
+                                <div class="step-detail">Import numpy as np</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.2</div>
+                                <div class="step-text">Code sigmoid(z)</div>
+                                <div class="step-detail">1 / (1 + np.exp(-z)) avec np.clip pour overflow</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.3</div>
+                                <div class="step-text">Teste sigmoid() avec des valeurs extrêmes</div>
+                                <div class="step-detail">sigmoid(0)=0.5, sigmoid(1000)≈1, sigmoid(-1000)≈0</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.4</div>
+                                <div class="step-text">Code cost_function(X, y, theta)</div>
+                                <div class="step-detail">Cross-entropy loss avec epsilon=1e-15</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.5</div>
+                                <div class="step-text">Code gradient_step(X, y, theta, lr)</div>
+                                <div class="step-detail">theta -= lr * gradient</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.6</div>
+                                <div class="step-text">Crée la classe LogisticRegression</div>
+                                <div class="step-detail">__init__(lr, iterations)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.7</div>
+                                <div class="step-text">Code fit(X, y) avec boucle d'entraînement</div>
+                                <div class="step-detail">Initialise theta, boucle, appelle gradient_step</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.8</div>
+                                <div class="step-text">Code predict_proba(X) et predict(X)</div>
+                                <div class="step-detail">predict = (proba >= 0.5).astype(int)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">4.9</div>
+                                <div class="step-text">Teste sur un cas simple (2 features, 2 classes)</div>
+                                <div class="step-detail">Vérifie que la loss diminue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 5 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 5</div>
+                        <div class="day-title">One-vs-All + Preprocessing</div>
+                        <div class="day-duration">⏱️ 3-4h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.1</div>
+                                <div class="step-text">Crée utils/preprocessing.py</div>
+                                <div class="step-detail">Pour la normalisation</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.2</div>
+                                <div class="step-text">Code standardize(X, mean, std)</div>
+                                <div class="step-detail">(X - mean) / std avec sauvegarde mean/std</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.3</div>
+                                <div class="step-text">Dans logistic.py : Code train_one_vs_all()</div>
+                                <div class="step-detail">Boucle sur 4 maisons, entraîne 4 modèles</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.4</div>
+                                <div class="step-text">Dans logistic.py : Code predict_multiclass()</div>
+                                <div class="step-detail">Calcule 4 probas, prend l'argmax</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.5</div>
+                                <div class="step-text">Crée logreg_train.py</div>
+                                <div class="step-detail">Structure de base + imports</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.6</div>
+                                <div class="step-text">Charge dataset_train.csv</div>
+                                <div class="step-detail">Sélectionne les features trouvées au Jour 3</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.7</div>
+                                <div class="step-text">Gère les NaN (dropna ou fillna)</div>
+                                <div class="step-detail">Simplifie avec dropna() pour commencer</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.8</div>
+                                <div class="step-text">Normalise X avec standardize()</div>
+                                <div class="step-detail">SAUVEGARDE mean et std dans le pickle</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.9</div>
+                                <div class="step-text">Appelle train_one_vs_all()</div>
+                                <div class="step-detail">Récupère le dict avec les 4 models</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">5.10</div>
+                                <div class="step-text">Sauvegarde avec pickle.dump()</div>
+                                <div class="step-detail">{'models': models, 'mean': mean, 'std': std, 'features': features}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 6 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 6</div>
+                        <div class="day-title">Prédiction + Tests finaux</div>
+                        <div class="day-duration">⏱️ 2-3h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.1</div>
+                                <div class="step-text">Crée logreg_predict.py</div>
+                                <div class="step-detail">Import pickle et pandas</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.2</div>
+                                <div class="step-text">Charge weights.pkl</div>
+                                <div class="step-detail">Récupère models, mean, std, features</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.3</div>
+                                <div class="step-text">Charge dataset_test.csv</div>
+                                <div class="step-detail">Sélectionne les MÊMES features que train</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.4</div>
+                                <div class="step-text">Normalise avec les mean/std DU TRAIN</div>
+                                <div class="step-detail">⚠️ NE RECALCULE PAS mean/std sur le test !</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.5</div>
+                                <div class="step-text">Appelle predict_multiclass()</div>
+                                <div class="step-detail">Récupère les prédictions</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.6</div>
+                                <div class="step-text">Crée houses.csv</div>
+                                <div class="step-detail">Format : Index,Hogwarts House</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.7</div>
+                                <div class="step-text">✅ TEST : Lance python logreg_train.py</div>
+                                <div class="step-detail">Vérifie que la loss diminue</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.8</div>
+                                <div class="step-text">✅ TEST : Lance python logreg_predict.py</div>
+                                <div class="step-detail">Vérifie houses.csv</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.9</div>
+                                <div class="step-text">Calcule l'accuracy (si tu as la vérité)</div>
+                                <div class="step-detail">sklearn.metrics.accuracy_score()</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">6.10</div>
+                                <div class="step-text">Si accuracy < 98% : ajuste hyperparamètres</div>
+                                <div class="step-detail">learning_rate, iterations, features</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JOUR 7 -->
+                <div class="roadmap-day">
+                    <div class="day-header">
+                        <div class="day-number">JOUR 7</div>
+                        <div class="day-title">Optimisation & Finitions</div>
+                        <div class="day-duration">⏱️ 2-3h</div>
+                    </div>
+                    <div class="roadmap-steps">
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.1</div>
+                                <div class="step-text">Calcule la matrice de corrélation</div>
+                                <div class="step-detail">Trouve et supprime les features redondantes</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.2</div>
+                                <div class="step-text">Teste différentes combinaisons de features</div>
+                                <div class="step-detail">4, 5, 6 features... trouve la meilleure combi</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.3</div>
+                                <div class="step-text">Teste learning_rate = [0.01, 0.1, 0.5, 1.0]</div>
+                                <div class="step-detail">Trouve celle qui converge le mieux</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.4</div>
+                                <div class="step-text">Teste iterations = [1000, 3000, 5000]</div>
+                                <div class="step-detail">Plus != mieux (risque d'overfitting)</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.5</div>
+                                <div class="step-text">Ajoute des commentaires dans ton code</div>
+                                <div class="step-detail">Explique les parties complexes</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.6</div>
+                                <div class="step-text">Vérifie que TOUS les scripts marchent</div>
+                                <div class="step-detail">Lance describe, histogram, scatter, pair, train, predict</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.7</div>
+                                <div class="step-text">Crée un README.md</div>
+                                <div class="step-detail">Comment installer, lancer, résultats obtenus</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.8</div>
+                                <div class="step-text">Prépare ta défense orale</div>
+                                <div class="step-detail">Note les points clés à expliquer</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.9</div>
+                                <div class="step-text">Push sur Git</div>
+                                <div class="step-detail">git add . && git commit -m "DSLR completed"</div>
+                            </div>
+                        </div>
+                        <div class="roadmap-step" onclick="toggleCheck(this)">
+                            <div class="step-checkbox">☐</div>
+                            <div class="step-content">
+                                <div class="step-number">7.10</div>
+                                <div class="step-text">🎉 PROJET TERMINÉ !</div>
+                                <div class="step-detail">Tu as codé une régression logistique from scratch !</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #fef3c7, #fcd34d);"></div>
+                <div>
+                    <div class="legend-text">Module 1</div>
+                    <div class="legend-desc">Statistiques & describe.py</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #dbeafe, #60a5fa);"></div>
+                <div>
+                    <div class="legend-text">Module 2</div>
+                    <div class="legend-desc">Visualisation de données</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #fce7f3, #f472b6);"></div>
+                <div>
+                    <div class="legend-text">Module 3</div>
+                    <div class="legend-desc">Régression logistique</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #d1fae5, #34d399);"></div>
+                <div>
+                    <div class="legend-text">Module 4</div>
+                    <div class="legend-desc">One-vs-All multi-classes</div>
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #e0e7ff, #818cf8);"></div>
+                <div>
+                    <div class="legend-text">Module 5</div>
+                    <div class="legend-desc">Feature selection</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleExpand(element) {
+            const content = element.querySelector('.expandable-content');
+            const icon = element.querySelector('.expand-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.classList.remove('active');
+            } else {
+                content.classList.add('active');
+                icon.classList.add('active');
+            }
+        }
+        
+        function toggleCheck(element) {
+            const checkbox = element.querySelector('.step-checkbox');
+            
+            if (element.classList.contains('completed')) {
+                element.classList.remove('completed');
+                checkbox.textContent = '☐';
+            } else {
+                element.classList.add('completed');
+                checkbox.textContent = '✓';
+            }
+            
+            // Sauvegarde dans localStorage
+            saveProgress();
+        }
+        
+        function saveProgress() {
+            const completedSteps = [];
+            document.querySelectorAll('.roadmap-step.completed').forEach((step, index) => {
+                const stepNumber = step.querySelector('.step-number').textContent;
+                completedSteps.push(stepNumber);
+            });
+            localStorage.setItem('dslr_progress', JSON.stringify(completedSteps));
+        }
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('dslr_progress');
+            if (saved) {
+                const completedSteps = JSON.parse(saved);
+                document.querySelectorAll('.roadmap-step').forEach(step => {
+                    const stepNumber = step.querySelector('.step-number').textContent;
+                    if (completedSteps.includes(stepNumber)) {
+                        step.classList.add('completed');
+                        step.querySelector('.step-checkbox').textContent = '✓';
+                    }
+                });
+            }
+        }
+        
+        // Charge la progression au chargement de la page
+        window.addEventListener('DOMContentLoaded', loadProgress);
+        
+        // EXERCICES PRÉPARATOIRES
+        function togglePrepCheck(element) {
+            const checkbox = element.querySelector('.prep-checkbox');
+            
+            if (element.classList.contains('completed')) {
+                element.classList.remove('completed');
+                checkbox.textContent = '☐';
+            } else {
+                element.classList.add('completed');
+                checkbox.textContent = '✓';
+            }
+            
+            // Sauvegarde et update stats
+            savePrepProgress();
+            updatePrepStats();
+        }
+        
+        function savePrepProgress() {
+            const completedExercises = [];
+            document.querySelectorAll('.prep-exercise.completed').forEach((exercise) => {
+                const exNumber = exercise.querySelector('.prep-ex-number').textContent;
+                completedExercises.push(exNumber);
+            });
+            localStorage.setItem('dslr_prep_progress', JSON.stringify(completedExercises));
+        }
+        
+        function loadPrepProgress() {
+            const saved = localStorage.getItem('dslr_prep_progress');
+            if (saved) {
+                const completedExercises = JSON.parse(saved);
+                document.querySelectorAll('.prep-exercise').forEach(exercise => {
+                    const exNumber = exercise.querySelector('.prep-ex-number').textContent;
+                    if (completedExercises.includes(exNumber)) {
+                        exercise.classList.add('completed');
+                        exercise.querySelector('.prep-checkbox').textContent = '✓';
+                    }
+                });
+            }
+            updatePrepStats();
+        }
+        
+        function updatePrepStats() {
+            const total = document.querySelectorAll('.prep-exercise').length;
+            const completed = document.querySelectorAll('.prep-exercise.completed').length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            document.getElementById('prep-completed').textContent = completed;
+            document.getElementById('prep-progress').textContent = percentage + '%';
+        }
+        
+        // Charge tout au chargement
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            loadPrepProgress();
+        });
+    </script>
+</body>
+</html>
