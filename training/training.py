@@ -58,6 +58,34 @@ def std(arr):
 	return racine
 
 
+def min_val(arr):
+	"""Retourne le minimum en ignorant NaN"""
+	min_value = None
+
+	for x in arr:
+		if x == x:
+			if min_value is None:
+				min_value = x
+			elif x < min_value:
+				min_value = x
+	return min_value
+
+
+def max_val(arr):
+	"""Retourne le maximun en ignorant NaN"""
+	max_value = None
+
+	for x in arr:
+		if x == x:
+			if max_value is None:
+				max_value = x
+			elif x > max_value:
+				max_value = x
+	return max_value
+
+
+def percentile(arr, p):
+    """Retourne le percentile p (p entre 0 et 100)"""
 
 
 def main():
