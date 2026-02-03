@@ -85,7 +85,30 @@ def max_val(arr):
 
 
 def percentile(arr, p):
-    """Retourne le percentile p (p entre 0 et 100)"""
+    """Retourne le percentile p (p entre 0 et 100)
+	Un percentile te dit : "X% des valeurs sont en dessous de cette valeur
+	La variable poids sert à savoir à quelle distance tu te trouves entre les deux cases.
+	Interpolation linéaire : estime une valeur entre deux points 
+	en suivant une ligne droite proportionnelle."""
+	values = []
+	for x in arr:
+		if x == x:
+			values.append(x)
+	values.sort()
+	len_values = len(values)
+	index = (p / 100) * (len_values - 1)
+
+	if index == int(index): # Vérifie si c'est un entier
+		return values[int(index)]
+	else:
+		low_index = int(index)
+		high_index = low_index + 1
+
+		poids = index - low_index
+
+		result = values[low_index] + poids * (values[high_index] - values[low_index])
+		return result
+
 
 
 def main():
