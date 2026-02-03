@@ -1,3 +1,4 @@
+from utils import count, mean, std, min_val, max_val, percentile
 import sys
 
 def main():
@@ -6,6 +7,7 @@ def main():
 		return
 	
 	filename = sys.argv[1] # Récupére le nom du fichier CSV
+	
 
 	# 1.Lire le CSV.
 	# 2. Calculer les statistiques pour chaque colonne numérique (count, Mean etc...)  
