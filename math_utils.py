@@ -36,13 +36,11 @@ def std(arr):
 	écart-type = racine carrée de la moyenne des carrés des écarts"""
 	# Calcule de la moyenne
 	mean_value = mean(arr)
-	ecarts = []
 	carres = []
 	for x in arr:
 		if x == x:
 			# Calcule l'ecarte de chaque valeur par rapport à la moyenne (valeaur - moyenne)
 			ecart = x - mean_value
-			ecarts.append(ecart)
 			
 			# Éleve chaque écart au carré
 			carre = ecart * ecart

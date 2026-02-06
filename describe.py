@@ -5,7 +5,9 @@ import csv
 
 # ⚠️ numpy pour optimiser. 
 
-# Data Analysis (V.1) -> Affiche les statistiques pour toutes les colonnes numériques.
+# Data Analysis (V.1) -> Affiche les statistiques pour toutes les colonnes numériques. ✅
+
+
 # Data Visualization (V.2) -> 3 programmes : 
 #     - histogram.py - Affiche un histogramme
 #     - scatter_plot.py - Affiche un scatter plot
@@ -21,6 +23,7 @@ import csv
 		# - Lit dataset_test.csv et le fichier de poids
 		# - Prédit la maison de chaque élève
 		# - Génère houses.csv
+
 
 
 def print_describe(all_stats):
