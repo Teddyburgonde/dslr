@@ -3,40 +3,42 @@ from statistics_calculation import get_stats
 import sys
 import csv
 
-# Ce que je dois faire: 
-# Je dois creer un programme qui analyse les donnees du fichier dataset_train.csv 
-# pour pouvoir predire dans quelle maison(Gryffondor, Serpentard...) chaque eleve doit aller.
-#
-#
-# Fichier a lire dataset_train.csv (Liste des éleves)
-# 1. Nettoyage : Parcoure ta liste data et pour chaque colonne, 
-# récupère uniquement les valeurs numériques et mets-les dans une liste.
-# 2. Calculs : Crée une fonction pour chaque statistique. 
-# Par exemple, pour la moyenne : somme_des_notes / nombre_de_notes.
-# 3. Affichage : Utilise des print formatés pour que tes colonnes soient 
-# bien alignées comme dans l'exemple du sujet.
-# 
-
-#             Arithmancy    Astronomy    Herbology ...
-# Count        1566.00000   1568.00000   1567.00000
-# Mean        49634.57024     39.79713      1.14102
-# Std         16674.47957    520.13232      5.21801
-...
-
-# ⚠️ transformer chaque valeur en nombre. Si ça marche, c'est que la colonne est numérique.
-#
-# 
 # ⚠️ numpy pour optimiser. 
+
+# Data Analysis (V.1) -> Affiche les statistiques pour toutes les colonnes numériques.
+# Data Visualization (V.2) -> 3 programmes : 
+#     - histogram.py - Affiche un histogramme
+#     - scatter_plot.py - Affiche un scatter plot
+#     - pair_plot.py - Affiche un pair plot (matrice de scatter plots)
+
+# Logistic Regression (V.3) -> 2 programmes
+	#   - logreg_train.py - Entraîne le modèle
+	# 	   -Lit dataset_train.csv
+	# 	   - Entraîne une régression logistique (one-vs-all)
+	# 	   - Sauvegarde les poids dans un fichier
+
+	# 	- logreg_predict.py - Fait les prédictions
+		# - Lit dataset_test.csv et le fichier de poids
+		# - Prédit la maison de chaque élève
+		# - Génère houses.csv
 
 
 def print_describe(all_stats):
 	"""
-    Affiche les statistiques calculées sous forme de tableau aligné.
+	Affiche les statistiques calculées sous forme de tableau aligné.
 	"""
-	ligne_of_header = " " * 15 
+	labels = ["Count", "Mean", "Std", "Min_val", "25%", "50%", "75%", "Max_val"]
+	ligne_of_header = " " * 8
 	for matiere in all_stats:
-		ligne_of_header += f"{matiere:>25}"
+		matiere_short = matiere[:12]
+		ligne_of_header += f"{matiere_short:>14}"
 	print(ligne_of_header)
+	for label in labels:
+		line = f"{label:<8}"
+		for matiere in all_stats:
+			value = all_stats[matiere][label]
+			line += f"{value:>14.2f}"
+		print(line)
 
 
 def main():
@@ -72,9 +74,6 @@ def main():
 
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
-
-	# 2. Calculer les statistiques pour chaque colonne numérique (count, Mean etc...)  
-	# 3. Affichier les résultats.
 
 if __name__ == "__main__":
 	main()

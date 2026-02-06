@@ -12,11 +12,11 @@ def get_stats(data_list):
 	sorted_list = sorted(clean_list)
 	
 	stats_function = {
-		"count": count(sorted_list),
-		"mean": mean(sorted_list),
-		"std": std(sorted_list),
-		"min_val": min_val(sorted_list),
-		"max_val": max_val(sorted_list),
+		"Count": count(sorted_list),
+		"Mean": mean(sorted_list),
+		"Std": std(sorted_list),
+		"Min_val": min_val(sorted_list),
+		"Max_val": max_val(sorted_list),
 		"25%": percentile(sorted_list, 25),
 		"50%": percentile(sorted_list, 50),
 		"75%": percentile(sorted_list, 75)
