@@ -1,4 +1,4 @@
-from utils import count, mean, std, min_val, max_val, percentile
+from math_utils import count, mean, std, min_val, max_val, percentile
 import sys
 import csv
 
@@ -20,24 +20,6 @@ import csv
 # ⚠️ transformer chaque valeur en nombre. Si ça marche, c'est que la colonne est numérique.
 #
 # 
-# Arithmancy
-# Astronomy
-# Herbology
-# Defense Against the Dark Arts
-# Divination
-# Muggle Studies
-# Ancient Runes
-# History of Magic
-# Transfiguration
-# Potions
-# Care of Magical Creatures
-# Charms
-# Flying
-#
-#
-#
-#
-#
 # ⚠️ numpy pour optimiser. 
 # ⚠️ panda pour les dataframes
 
