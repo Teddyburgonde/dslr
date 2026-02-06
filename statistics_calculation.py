@@ -1,17 +1,4 @@
-def count(arr):
-def mean(arr):
-def std(arr):
-def min_val(arr):
-def max_val(arr):
-def percentile(arr, p):
-
-
-# utiliser sorted
-# Créer clean_list (déjà fait).
-# Créer une nouvelle variable sorted_list en appliquant sorted() sur clean_list.
-# Remplacer clean_list par sorted_list dans tous les appels de ton dictionnaire stats_function.
-
-
+from math_utils import count, mean, std, min_val, max_val, percentile
 
 def get_stats(data_list):
 	"""
@@ -22,15 +9,17 @@ def get_stats(data_list):
 	for x in data_list:
 		if x == x:
 			clean_list.append(x)
-
+	sorted_list = sorted(clean_list)
 	
 	stats_function = {
-		"count": count(clean_list),
-		"mean": mean(clean_list),
-		"std": std(clean_list),
-		"min_val": min_val(clean_list),
-		"max_val": max_val(clean_list),
-		"25%": percentile(clean_list, 25),
-		"50%": percentile(clean_list, 50),
-		"75%": percentile(clean_list, 75)
+		"count": count(sorted_list),
+		"mean": mean(sorted_list),
+		"std": std(sorted_list),
+		"min_val": min_val(sorted_list),
+		"max_val": max_val(sorted_list),
+		"25%": percentile(sorted_list, 25),
+		"50%": percentile(sorted_list, 50),
+		"75%": percentile(sorted_list, 75)
 		}
+	result = stats_function
+	return result

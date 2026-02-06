@@ -1,4 +1,5 @@
 from math_utils import count, mean, std, min_val, max_val, percentile
+from statistics_calculation import get_stats
 import sys
 import csv
 
@@ -16,12 +17,27 @@ import csv
 # bien alignées comme dans l'exemple du sujet.
 # 
 
+#             Arithmancy    Astronomy    Herbology ...
+# Count        1566.00000   1568.00000   1567.00000
+# Mean        49634.57024     39.79713      1.14102
+# Std         16674.47957    520.13232      5.21801
+...
 
 # ⚠️ transformer chaque valeur en nombre. Si ça marche, c'est que la colonne est numérique.
 #
 # 
 # ⚠️ numpy pour optimiser. 
-# ⚠️ panda pour les dataframes
+
+
+def print_describe(all_stats):
+	"""
+    Affiche les statistiques calculées sous forme de tableau aligné.
+	"""
+	ligne_of_header = " " * 15 
+	for matiere in all_stats:
+		ligne_of_header += f"{matiere:>25}"
+	print(ligne_of_header)
+
 
 def main():
 	if len(sys.argv) != 2:
@@ -29,6 +45,7 @@ def main():
 		return
 	
 	filename = sys.argv[1]
+	all_stats = {}
 	try:
 		with open(filename, "r") as f:
 			reader = csv.DictReader(f)
@@ -44,12 +61,14 @@ def main():
 							if row[x] != "": # Si la case n'est pas vide
 								value = float(row[x]) # On garde que les valeurs numeriques.
 								current_col_values.append(value)
+
 						except ValueError:
 							pass # Ce n'est pas une valeur numeriques donc on passe.
 					
 					if len(current_col_values) > 0:
-						print(f"Colonne trouvée : {x}")
-						# print(f"Analyse de : {x} ({len(current_col_values)} notes trouvées)")
+						all_stats[x] = get_stats(current_col_values)
+		if all_stats:
+			print_describe(all_stats)
 
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
@@ -59,3 +78,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
