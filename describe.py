@@ -1,5 +1,7 @@
 from math_utils import count, mean, std, min_val, max_val, percentile
+from histogram import plot_all_histograms
 from statistics_calculation import get_stats
+
 import sys
 import csv
 
@@ -73,7 +75,15 @@ def main():
 					if len(current_col_values) > 0:
 						all_stats[x] = get_stats(current_col_values)
 		if all_stats:
-			print_describe(all_stats)
+			# Affiche le tableau de stats
+			# print_describe(all_stats)
+
+			# Prépare la liste des matières pour les graphiques
+			features_list = list(all_stats.keys())
+
+			# Dessine l'histogramme 
+			plot_all_histograms(data, features_list)
+
 
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
