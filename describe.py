@@ -1,5 +1,5 @@
 from math_utils import count, mean, std, min_val, max_val, percentile
-from histogram import plot_all_histograms
+from histogram import plot_all_histograms, plot_scatter_comparison
 from statistics_calculation import get_stats
 
 import sys
@@ -79,11 +79,15 @@ def main():
 			# print_describe(all_stats)
 
 			# Prépare la liste des matières pour les graphiques
-			features_list = list(all_stats.keys())
+			# features_list = list(all_stats.keys())
 
-			# Dessine l'histogramme 
-			plot_all_histograms(data, features_list)
+			# # Affiche l'histogramme 
+			# plot_all_histograms(data, features_list)
 
+			# Affiche un scatter plot
+			plot_scatter_comparison(data, "Astronomy", "Defense Against the Dark Arts")
+			# or 
+			# plot_scatter_comparison(data, "Arithmancy", "Care of Magical Creatures")
 
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")

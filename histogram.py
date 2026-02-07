@@ -49,32 +49,55 @@ def plot_all_histograms(data, features):
 	plt.show()
 
 
-	# B. POUR chaque maison dans la liste des maisons :
+def plot_scatter_comparison(data, feature_x, feature_y):
+	"""
+	Affiche un nuage de points comparant deux matières.
+	Chaque point est coloré selon la maison de l'élève.
 
-		# iii. Tracer l'histogramme sur l'axe sélectionné :
-		# Passer 'notes_propres', définir le nombre de bins (ex: 20),
-		# l'opacité (alpha=0.5) et le label du nom de la maison
+	Args:
+		data (list): Liste de dictionnaires (les élèves).
+		feature_x (str): Nom de la première matière (ex: 'Astronomy').
+		feature_y (str): Nom de la deuxième matière (ex: 'Defense Against the Dark Arts').
+	"""
+	houses = {
+		"Gryffindor": "red",
+		"Hufflepuff": "yellow",
+		"Ravenclaw": "blue",
+		"Slytherin": "green"
+	}
+	plt.figure(figsize=(10, 8))
 
-		# x : Ta liste de nombres (ex: clean_notes).
-
-		# bins : Le nombre de colonnes. Plus il y en a, plus c'est précis. (Ex: bins=20).
-
-		# color : La couleur des barres.
-
-		# alpha : La transparence (de 0 à 1). Très important quand on superpose plusieurs maisons !
-
-		# label : Le nom pour la légende (ex: "Gryffindor").
-
-		# Ajouter le nom de la matière en haut du petit graphique
-		# current_ax.set_title(course_name)
-
-		# Afficher la petite boîte qui explique les couleurs (la légende)
-		# current_ax.legend()
-
-
+	for house_name, color in houses.items():
+		note_x = []
+		note_y = []
+		for student in data:
+			if student['Hogwarts House'] == house_name:
+				value_x = student[feature_x]
+				value_y = student[feature_y]
+				if value_x != "" and value_y != "":
+					note_x.append(float(value_x))
+					note_y.append(float(value_y))
+		plt.scatter(note_x, note_y, c=color, label=house_name, alpha=0.5)
+	plt.xlabel(feature_x)
+	plt.ylabel(feature_y)
+	plt.legend()
+	plt.show()
 
 
 
-	# C. Configurer l'axe actuel :
-	# Ajouter le titre (nom_matiere) et afficher la légende
 
+
+
+
+
+
+
+
+
+# scatter_plot.py 
+
+# Affiche un scatter plot
+
+# Pour dessiner: plt.scatter(liste_x, liste_y, color=color)
+# donné a creer: notes_x et notes_y
+# plt.show()
