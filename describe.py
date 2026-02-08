@@ -1,6 +1,9 @@
 from math_utils import count, mean, std, min_val, max_val, percentile
-from histogram import plot_all_histograms, plot_scatter_comparison
+from histogram import plot_all_histograms
+from scatter_plot import plot_scatter_comparison
 from statistics_calculation import get_stats
+from pair_plot import plot_pair_plot
+import pandas as pd
 
 import sys
 import csv
@@ -8,12 +11,10 @@ import csv
 # ⚠️ numpy pour optimiser. 
 
 # Data Analysis (V.1) -> Affiche les statistiques pour toutes les colonnes numériques. ✅
-
-
 # Data Visualization (V.2) -> 3 programmes : 
-#     - histogram.py - Affiche un histogramme
-#     - scatter_plot.py - Affiche un scatter plot
-#     - pair_plot.py - Affiche un pair plot (matrice de scatter plots)
+#     - histogram.py - Affiche un histogramme ✅
+#     - scatter_plot.py - Affiche un scatter plot ✅
+#     - pair_plot.py - Affiche un pair plot (matrice de scatter plots) ✅
 
 # Logistic Regression (V.3) -> 2 programmes
 	#   - logreg_train.py - Entraîne le modèle
@@ -33,17 +34,17 @@ def print_describe(all_stats):
 	Affiche les statistiques calculées sous forme de tableau aligné.
 	"""
 	labels = ["Count", "Mean", "Std", "Min_val", "25%", "50%", "75%", "Max_val"]
-	ligne_of_header = " " * 8
-	for matiere in all_stats:
-		matiere_short = matiere[:12]
-		ligne_of_header += f"{matiere_short:>14}"
-	print(ligne_of_header)
+	header_line = " " * 8
+	for subject in all_stats:
+		subject_short = subject[:12]
+		header_line += f"{subject_short:>14}"
+	print(header_line)
 	for label in labels:
-		line = f"{label:<8}"
-		for matiere in all_stats:
-			value = all_stats[matiere][label]
-			line += f"{value:>14.2f}"
-		print(line)
+		row = f"{label:<8}"
+		for subject in all_stats:
+			value = all_stats[subject][label]
+			row += f"{value:>14.2f}"
+		print(row)
 
 
 def main():
@@ -53,27 +54,20 @@ def main():
 	
 	filename = sys.argv[1]
 	all_stats = {}
-	try:
-		with open(filename, "r") as f:
-			reader = csv.DictReader(f)
-			data = list(reader)
-			exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
-			if data:
-				for x in data[0].keys():
-					if x in exclude:
-						continue
-					current_col_values = []
-					for row in data:
-						try:
-							if row[x] != "": # Si la case n'est pas vide
-								value = float(row[x]) # On garde que les valeurs numeriques.
-								current_col_values.append(value)
 
-						except ValueError:
-							pass # Ce n'est pas une valeur numeriques donc on passe.
-					
-					if len(current_col_values) > 0:
-						all_stats[x] = get_stats(current_col_values)
+	try:
+		df = pd.read_csv(filename)
+			
+		exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
+			
+		for column_name in df.columns:
+			if column_name in exclude:
+				continue
+
+			current_col_values = df[column_name].dropna().tolist()	
+			if len(current_col_values) > 0:
+				all_stats[column_name] = get_stats(current_col_values)
+		
 		if all_stats:
 			# Affiche le tableau de stats
 			# print_describe(all_stats)
@@ -85,10 +79,16 @@ def main():
 			# plot_all_histograms(data, features_list)
 
 			# Affiche un scatter plot
-			plot_scatter_comparison(data, "Astronomy", "Defense Against the Dark Arts")
+			# plot_scatter_comparison(data, "Astronomy", "Defense Against the Dark Arts")
 			# or 
 			# plot_scatter_comparison(data, "Arithmancy", "Care of Magical Creatures")
 
+			# On récupere la liste des matières traitées
+			# features_list = list(all_stats.keys())
+
+			# Affiche un pair plot
+			# plot_pair_plot(df, features_list)
+	
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
 

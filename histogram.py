@@ -84,20 +84,3 @@ def plot_scatter_comparison(data, feature_x, feature_y):
 	plt.show()
 
 
-
-
-
-
-
-
-
-
-
-
-# scatter_plot.py 
-
-# Affiche un scatter plot
-
-# Pour dessiner: plt.scatter(liste_x, liste_y, color=color)
-# donné a creer: notes_x et notes_y
-# plt.show()
