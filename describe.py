@@ -67,10 +67,10 @@ def main():
 			current_col_values = df[column_name].dropna().tolist()	
 			if len(current_col_values) > 0:
 				all_stats[column_name] = get_stats(current_col_values)
-		
+
 		if all_stats:
 			# Affiche le tableau de stats
-			# print_describe(all_stats)
+			print_describe(all_stats)
 
 			# Prépare la liste des matières pour les graphiques
 			# features_list = list(all_stats.keys())
@@ -94,4 +94,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
