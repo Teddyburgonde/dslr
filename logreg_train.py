@@ -77,8 +77,6 @@ def loss_function(X, y, weights):
 # 5. Exporter les résultats : Enregistrer tous les poids (les 4 vecteurs) dans un fichier (souvent un .csv ou un .json) pour que ton programme de prédiction puisse les réutiliser plus tard.
 
 
-
-
 def main():
 
 	if len(sys.argv) != 2:
@@ -88,6 +86,12 @@ def main():
 	filename = sys.argv[1]
 	all_stats = {}
 
-	result = []
-	for y in house
-		weights = fit(X, y)
+	try:
+		df = pd.read_csv(filename)
+
+		result = []
+		for y in house
+			weights = fit(X, y)
+
+	except FileNotFoundError:
+		print(f"Error: The file '{filename}' cannot be found.")

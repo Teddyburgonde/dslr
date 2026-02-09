@@ -17,10 +17,10 @@ import csv
 #     - pair_plot.py - Affiche un pair plot (matrice de scatter plots) ✅
 
 # Logistic Regression (V.3) -> 2 programmes
-	#   - logreg_train.py - Entraîne le modèle
-	# 	   -Lit dataset_train.csv
-	# 	   - Entraîne une régression logistique (one-vs-all)
-	# 	   - Sauvegarde les poids dans un fichier
+	#   - logreg_train.py - Entraîne le modèle ✅
+	# 	   -Lit dataset_train.csv ✅
+	# 	   - Entraîne une régression logistique (one-vs-all) ✅
+	# 	   - Sauvegarde les poids dans un fichier ✅
 
 	# 	- logreg_predict.py - Fait les prédictions
 		# - Lit dataset_test.csv et le fichier de poids
