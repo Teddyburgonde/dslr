@@ -81,7 +81,7 @@ def loss_function(X, y, weights):
 
 
 # Le biais (b), 
-# c'est ce qui te donne le droit de soulever ou de baisser cette ligne pour qu'elle passe ailleurs.
+# souleve la ligne pour lui donner une chance.
 
 # Pour créer cette matrice, on utilise np.zeros.
 def main():
@@ -102,6 +102,12 @@ def main():
 		# Mise à l'échelle pour équilibrer les matières.
 		X = (X - X.mean()) / X.std()
 		houses = y.unique()
+
+		# np.zeros pour creer une matrice
+		# Lignes : len(houses) (soit 4).
+		# Colonnes : X.shape[1] + 1
+		# weight = 
+		
 		print(houses)
 		result = []
 
