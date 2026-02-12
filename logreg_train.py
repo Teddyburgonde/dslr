@@ -1,4 +1,7 @@
 import numpy as np
+import sys
+import pandas as pd
+from math_utils import mean, std
 
 # Un contre tous (One-vs-All) 
 # "Est-ce que cet élève va chez Gryffondor ?"
@@ -77,6 +80,10 @@ def loss_function(X, y, weights):
 # 5. Exporter les résultats : Enregistrer tous les poids (les 4 vecteurs) dans un fichier (souvent un .csv ou un .json) pour que ton programme de prédiction puisse les réutiliser plus tard.
 
 
+# Le biais (b), 
+# c'est ce qui te donne le droit de soulever ou de baisser cette ligne pour qu'elle passe ailleurs.
+
+# Pour créer cette matrice, on utilise np.zeros.
 def main():
 
 	if len(sys.argv) != 2:
@@ -85,13 +92,21 @@ def main():
 	
 	filename = sys.argv[1]
 	all_stats = {}
+	houses = []
 
 	try:
 		df = pd.read_csv(filename)
-
+		y = df["Hogwarts House"]
+		X = df.select_dtypes(include=[np.number]).drop(columns=['Index'])
+		X = X.fillna(X.mean())
+		# Mise à l'échelle pour équilibrer les matières.
+		X = (X - X.mean()) / X.std()
+		houses = y.unique()
+		print(houses)
 		result = []
-		for y in house
-			weights = fit(X, y)
 
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
+
+if __name__=="__main__":
+	main()
