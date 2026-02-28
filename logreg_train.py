@@ -6,7 +6,7 @@
 #    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/28 17:41:07 by tebandam          #+#    #+#              #
-#    Updated: 2026/02/28 17:53:59 by tebandam         ###   ########.fr        #
+#    Updated: 2026/02/28 18:07:17 by tebandam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -101,11 +101,12 @@ def save_weights(weight: np.array, bias: np.array,  zscores: pd.DataFrame):
 
 
 def main():
-	if len(sys.argv) != 2:
-		print("Usage: python3 logreg_train.py dataset_train.csv")
-		return
 	try:
+		if len(sys.argv) != 2:
+			raise AssertionError("Usage: python3 logreg_train.py dataset_train.csv")
 		filename = sys.argv[1]
+		if filename != "dataset_train.csv":
+			raise AssertionError("Error: argv[1] should be named 'dataset_train.csv'")
 		buf = pd.read_csv(filename)
 		exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand"]
 		df = buf.drop(columns=exclude)

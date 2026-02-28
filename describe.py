@@ -6,7 +6,7 @@
 #    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/28 17:38:10 by tebandam          #+#    #+#              #
-#    Updated: 2026/02/28 17:42:43 by tebandam         ###   ########.fr        #
+#    Updated: 2026/02/28 18:08:05 by tebandam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,11 +59,12 @@ def print_describe(all_stats):
 
 
 def main():
-	if len(sys.argv) != 2:
-		print("Usage: python describe.py dataset_train.csv")
-		return
 	try:
+		if len(sys.argv) != 2:
+			raise AssertionError("Usage: python3 describe.py dataset_train.csv")
 		filename = sys.argv[1]
+		if filename != "dataset_train.csv":
+			raise AssertionError("Error: argv[1] should be named 'dataset_train.csv'")
 		all_stats = {}
 		df = pd.read_csv(filename)
 		exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
@@ -93,6 +94,8 @@ def main():
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
 		return
+	except Exception as error:
+		print(f"{type(error)} : {error}")
 	
 if __name__ == "__main__":
 	main()
