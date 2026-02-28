@@ -1,7 +1,12 @@
 from math_utils import count, mean, std, min_val, max_val, percentile
+from scatter_plot import scatter_plot
+from histogram import histogram
+from pair_plot import pair_plot
+
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sys
+
 
 def get_stats(values: list):
 	"""
@@ -42,37 +47,6 @@ def print_describe(all_stats):
 		print(row)
 
 
-def histogram(df: pd.DataFrame):
-
-	houses_list = {
-		"Gryffindor": "red",
-		"Hufflepuff": "yellow",
-		"Ravenclaw": "blue",
-		"Slytherin": "green"
-	}
-	exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
-	fig, axs = plt.subplots(4, 4, figsize=(14, 10))
-	axs_flat = axs.flatten()
-
-	lessons = [c for c in df.columns if c not in exclude] # on cree une list contenant tout les nom de cours
-
-	for i, course in enumerate(lessons):
-		house_means = []
-		for house_name, color in houses_list.items():
-			scores = df[df['Hogwarts House'] == house_name][course].dropna()
-			axs_flat[i].hist(scores, color = color, alpha=0.5, label=house_name)
-			if not scores.empty:
-				house_means.append(mean(scores))
-		std_result = std(house_means)
-		if i == 0:
-			axs_flat[i].legend()
-		axs_flat[i].set_title(f"{course}\n(std: {std_result:.4f})")
-
-	for j in range(len(lessons), len(axs_flat)):
-		axs_flat[j].axis('off')
-	plt.tight_layout()
-	plt.show()
-
 
 def main():
 	if len(sys.argv) != 2:
@@ -93,29 +67,18 @@ def main():
 				all_stats[column_name] = get_stats(current_col_values)
 
 		if all_stats:
-			# Affiche le tableau de stats
+			# Affiche le tableau de stats (P1)
 			print_describe(all_stats)
 
-			# Affiche l'histogramme 
+			# Affiche l'histogramme (P2)
 			histogram(df)
+			
+			# Affiche un scatter plot (P2)
+			scatter_plot(df, "Astronomy", "Defense Against the Dark Arts")
+			
+			# Affiche un pair plot (P2)
+			pair_plot(df)
 
-
-
-
-
-
-
-
-			# Affiche un scatter plot
-			# plot_scatter_comparison(df, "Astronomy", "Defense Against the Dark Arts")
-			# or 
-			# plot_scatter_comparison(df, "Arithmancy", "Care of Magical Creatures")
-
-			# On récupere la liste des matières traitées
-			# features_list = list(all_stats.keys())
-
-			# Affiche un pair plot
-			# plot_pair_plot(df, features_list)
 	
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
