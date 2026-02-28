@@ -1,14 +1,27 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    scatter_plot.py                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:49:52 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:49:55 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 import matplotlib.pyplot as plt
+import pandas as pd
 
-def plot_scatter_comparison(data, feature_x, feature_y):
+def scatter_plot(df: pd.DataFrame, feature_x: str, feature_y: str):
 	"""
-	Affiche un nuage de points comparant deux matières.
-	Chaque point est coloré selon la maison de l'élève.
-
+	Displays a scatter plot comparing two courses.
+	Each point is colored according to the student's house.
 	Args:
-		data (list): Liste de dictionnaires (les élèves).
-		feature_x (str): Nom de la première matière (ex: 'Astronomy').
-		feature_y (str): Nom de la deuxième matière (ex: 'Defense Against the Dark Arts').
+		df (pd.DataFrame): DataFrame containing the students data.
+		feature_x (str): Name of the first course (e.g. 'Astronomy').
+		feature_y (str): Name of the second course (e.g. 'Defense Against the Dark Arts').
 	"""
 	houses_list = {
 		"Gryffindor": "red",
@@ -19,17 +32,10 @@ def plot_scatter_comparison(data, feature_x, feature_y):
 	plt.figure(figsize=(10, 8))
 
 	for house_name, color in houses_list.items():
-		note_x = []
-		note_y = []
-		for student in data:
-			if student['Hogwarts House'] == house_name:
-				value_x = student[feature_x]
-				value_y = student[feature_y]
-				if value_x != "" and value_y != "":
-					note_x.append(float(value_x))
-					note_y.append(float(value_y))
-		plt.scatter(note_x, note_y, c=color, label=house_name, alpha=0.5)
+		house_note = df[df['Hogwarts House'] == house_name][[feature_x, feature_y]].dropna()
+		plt.scatter(house_note[feature_x], house_note[feature_y], c =color, label=house_name, alpha=0.5)
 	plt.xlabel(feature_x)
 	plt.ylabel(feature_y)
+	plt.title(f"Correlation between {feature_x} and {feature_y}")
 	plt.legend()
 	plt.show()

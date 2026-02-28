@@ -1,37 +1,47 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    describe.py                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:38:10 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:42:43 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 from math_utils import count, mean, std, min_val, max_val, percentile
-from histogram import plot_all_histograms
-from scatter_plot import plot_scatter_comparison
-from statistics_calculation import get_stats
-from pair_plot import plot_pair_plot
+from scatter_plot import scatter_plot
+from histogram import histogram
+from pair_plot import pair_plot
+
 import pandas as pd
-
 import sys
-import csv
 
-# ⚠️ numpy pour optimiser. 
-
-# Data Analysis (V.1) -> Affiche les statistiques pour toutes les colonnes numériques. ✅
-# Data Visualization (V.2) -> 3 programmes : 
-#     - histogram.py - Affiche un histogramme ✅
-#     - scatter_plot.py - Affiche un scatter plot ✅
-#     - pair_plot.py - Affiche un pair plot (matrice de scatter plots) ✅
-
-# Logistic Regression (V.3) -> 2 programmes
-	#   - logreg_train.py - Entraîne le modèle ✅
-	# 	   -Lit dataset_train.csv ✅
-	# 	   - Entraîne une régression logistique (one-vs-all) ✅
-	# 	   - Sauvegarde les poids dans un fichier ✅
-
-	# 	- logreg_predict.py - Fait les prédictions
-		# - Lit dataset_test.csv et le fichier de poids
-		# - Prédit la maison de chaque élève
-		# - Génère houses.csv
+def get_stats(values: list):
+	"""
+	Computes all statistics for a data column and returns them as a dictionary.
+	"""
+	
+	stats_function = {
+		"Count": count(values),
+		"Mean": mean(values),
+		"Std": std(values),
+		"Min_val": min_val(values),
+		"Max_val": max_val(values),
+		"25%": percentile(values, 25),
+		"50%": percentile(values, 50),
+		"75%": percentile(values, 75)
+		}
+	result = stats_function
+	return result
 
 
 
 def print_describe(all_stats):
 	"""
-	Affiche les statistiques calculées sous forme de tableau aligné.
+	Displays the computed statistics as an aligned table.
 	"""
 	labels = ["Count", "Mean", "Std", "Min_val", "25%", "50%", "75%", "Max_val"]
 	header_line = " " * 8
@@ -47,19 +57,17 @@ def print_describe(all_stats):
 		print(row)
 
 
+
 def main():
 	if len(sys.argv) != 2:
-		print("Usage: python describe.py dataset.csv")
+		print("Usage: python describe.py dataset_train.csv")
 		return
-	
-	filename = sys.argv[1]
-	all_stats = {}
-
 	try:
+		filename = sys.argv[1]
+		all_stats = {}
 		df = pd.read_csv(filename)
-			
 		exclude = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
-			
+	
 		for column_name in df.columns:
 			if column_name in exclude:
 				continue
@@ -69,28 +77,26 @@ def main():
 				all_stats[column_name] = get_stats(current_col_values)
 
 		if all_stats:
-			# Affiche le tableau de stats
-			# print_describe(all_stats)
+			# Display stats array (P1)
+			print_describe(all_stats)
 
-			# Prépare la liste des matières pour les graphiques
-			features_list = list(all_stats.keys())
+			# Display histogram (P2)
+			histogram(df)
+			
+			# Display a scatter plot (P2)
+			scatter_plot(df, "Astronomy", "Defense Against the Dark Arts")
+			
+			# Display a pair plot (P2)
+			pair_plot(df)
 
-			# # Affiche l'histogramme 
-			plot_all_histograms(df, features_list)
-
-			# Affiche un scatter plot
-			plot_scatter_comparison(df, "Astronomy", "Defense Against the Dark Arts")
-			# or 
-			# plot_scatter_comparison(df, "Arithmancy", "Care of Magical Creatures")
-
-			# On récupere la liste des matières traitées
-			# features_list = list(all_stats.keys())
-
-			# Affiche un pair plot
-			# plot_pair_plot(df, features_list)
 	
 	except FileNotFoundError:
 		print(f"Error: The file '{filename}' cannot be found.")
-
+		return
+	
 if __name__ == "__main__":
 	main()
+
+
+
+
