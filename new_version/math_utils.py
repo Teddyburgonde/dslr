@@ -6,9 +6,10 @@
 #    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/28 12:33:37 by tebandam          #+#    #+#              #
-#    Updated: 2026/02/28 13:18:00 by tebandam         ###   ########.fr        #
+#    Updated: 2026/02/28 13:41:43 by tebandam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
 
 def	count(value: list):
 	"""
@@ -31,11 +32,12 @@ def	mean(value: list):
 def	std(value: list):
 	"""Calcule l'écart-type (population).
 	écart-type = racine carrée de la moyenne des carrés des écarts"""
+	size = count(value)
 	mean_value = mean(value)
 	sum_of_squares = 0
 	for x in value:
 		sum_of_squares += (x - mean_value) ** 2
-	result = (sum_of_squares / mean_value) ** 0.5
+	result = (sum_of_squares / size) ** 0.5
 	return result
 
 
