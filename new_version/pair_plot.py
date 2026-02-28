@@ -1,13 +1,25 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    pair_plot.py                                       :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:50:02 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:55:03 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 def pair_plot(df):
-	""" 
-	Affiche une matrice de graphiques :
-	- Sur la diagonale : un histogramme pour voir la distribution d'une matière.
-	- Hors diagonale : un nuage de points pour voir la corrélation entre deux matières.
 	"""
-
+	Displays a matrix of plots:
+	- Diagonal: a histogram showing the distribution of each course.
+	- Off-diagonal: a scatter plot showing the correlation between two courses.
+	"""
 	houses_list = {
 		"Gryffindor": "red",
 		"Hufflepuff": "yellow",
@@ -40,5 +52,5 @@ def pair_plot(df):
 				axs_flat[(i * n) + j].set_title(course2, fontsize=10)
 			if j == 0:
 				axs_flat[(i * n) + j].set_ylabel(course1, fontsize=8, rotation=55, ha='right', labelpad=2)
-	plt.tight_layout() # Permet d'eviter le chevauchement.
+	plt.tight_layout() # Prevents overlapping between plots.
 	plt.show()

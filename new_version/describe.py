@@ -1,17 +1,27 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    describe.py                                        :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:38:10 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:42:43 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 from math_utils import count, mean, std, min_val, max_val, percentile
 from scatter_plot import scatter_plot
 from histogram import histogram
 from pair_plot import pair_plot
 
 import pandas as pd
-# import matplotlib.pyplot as plt
 import sys
-
 
 def get_stats(values: list):
 	"""
-	Calcule toutes les statistiques nécessaires pour une colonne de données
-	et les retourne sous forme de list.
+	Computes all statistics for a data column and returns them as a dictionary.
 	"""
 	
 	stats_function = {
@@ -31,7 +41,7 @@ def get_stats(values: list):
 
 def print_describe(all_stats):
 	"""
-	Affiche les statistiques calculées sous forme de tableau aligné.
+	Displays the computed statistics as an aligned table.
 	"""
 	labels = ["Count", "Mean", "Std", "Min_val", "25%", "50%", "75%", "Max_val"]
 	header_line = " " * 8
@@ -50,7 +60,7 @@ def print_describe(all_stats):
 
 def main():
 	if len(sys.argv) != 2:
-		print("Usage: python describe.py dataset.csv")
+		print("Usage: python describe.py dataset_train.csv")
 		return
 	try:
 		filename = sys.argv[1]
@@ -67,16 +77,16 @@ def main():
 				all_stats[column_name] = get_stats(current_col_values)
 
 		if all_stats:
-			# Affiche le tableau de stats (P1)
+			# Display stats array (P1)
 			print_describe(all_stats)
 
-			# Affiche l'histogramme (P2)
+			# Display histogram (P2)
 			histogram(df)
 			
-			# Affiche un scatter plot (P2)
+			# Display a scatter plot (P2)
 			scatter_plot(df, "Astronomy", "Defense Against the Dark Arts")
 			
-			# Affiche un pair plot (P2)
+			# Display a pair plot (P2)
 			pair_plot(df)
 
 	

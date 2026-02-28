@@ -1,9 +1,25 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    histogram.py                                       :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:38:18 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:54:30 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import matplotlib.pyplot as plt
 import pandas as pd
 from math_utils import std, mean
 
 def histogram(df: pd.DataFrame):
-
+	"""
+    Displays a grid of histograms for each course, colored by Hogwarts house.
+    The std in each title shows how homogeneous the score distribution is between houses.
+    The lower the std, the more similar the distributions are across houses.
+    """
 	houses_list = {
 		"Gryffindor": "red",
 		"Hufflepuff": "yellow",
@@ -14,7 +30,7 @@ def histogram(df: pd.DataFrame):
 	fig, axs = plt.subplots(4, 4, figsize=(14, 10))
 	axs_flat = axs.flatten()
 
-	lessons = [c for c in df.columns if c not in exclude] # on cree une list contenant tout les nom de cours
+	lessons = [c for c in df.columns if c not in exclude]
 
 	for i, course in enumerate(lessons):
 		house_means = []

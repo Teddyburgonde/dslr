@@ -1,14 +1,27 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    scatter_plot.py                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/02/28 17:49:52 by tebandam          #+#    #+#              #
+#    Updated: 2026/02/28 17:49:55 by tebandam         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 def scatter_plot(df: pd.DataFrame, feature_x: str, feature_y: str):
 	"""
-	Affiche un nuage de points comparant deux matières.
-	Chaque point est coloré selon la maison de l'élève.
+	Displays a scatter plot comparing two courses.
+	Each point is colored according to the student's house.
 	Args:
-		df (pd.DataFrame): Le DataFrame contenant les données des élèves.
-		feature_x (str): Nom de la première matière (ex: 'Astronomy').
-		feature_y (str): Nom de la deuxième matière (ex: 'Defense Against the Dark Arts').
+		df (pd.DataFrame): DataFrame containing the students data.
+		feature_x (str): Name of the first course (e.g. 'Astronomy').
+		feature_y (str): Name of the second course (e.g. 'Defense Against the Dark Arts').
 	"""
 	houses_list = {
 		"Gryffindor": "red",
