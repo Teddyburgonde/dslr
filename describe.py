@@ -70,18 +70,18 @@ def main():
 
 		if all_stats:
 			# Affiche le tableau de stats
-			print_describe(all_stats)
+			# print_describe(all_stats)
 
 			# Prépare la liste des matières pour les graphiques
-			# features_list = list(all_stats.keys())
+			features_list = list(all_stats.keys())
 
 			# # Affiche l'histogramme 
-			# plot_all_histograms(data, features_list)
+			plot_all_histograms(df, features_list)
 
 			# Affiche un scatter plot
-			# plot_scatter_comparison(data, "Astronomy", "Defense Against the Dark Arts")
+			plot_scatter_comparison(df, "Astronomy", "Defense Against the Dark Arts")
 			# or 
-			# plot_scatter_comparison(data, "Arithmancy", "Care of Magical Creatures")
+			# plot_scatter_comparison(df, "Arithmancy", "Care of Magical Creatures")
 
 			# On récupere la liste des matières traitées
 			# features_list = list(all_stats.keys())
